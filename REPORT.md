@@ -72,7 +72,7 @@ Vérifié dans le YAML du Pod : `runAsNonRoot: true`, `runAsUser: 101` (`id` ren
 | Configuration | Résultat Trivy |
 |---|---|
 | Sécurisée | 3 LOW |
-| Affaiblie (`runAsNonRoot: false`, `allowPrivilegeEscalation: true`) | 3 LOW + 2 MEDIUM : <identifiants KSV> |
+| Affaiblie (`runAsNonRoot: false`, `allowPrivilegeEscalation: true`) | 3 LOW + 2 MEDIUM : KSV-0001, KSV-0012 |
 
 Le seuil initial `CRITICAL,HIGH` ne détectait pas cette régression. Je l'ai donc étendu à `MEDIUM` pour le scan des manifests.
 
@@ -85,7 +85,7 @@ Le seuil initial `CRITICAL,HIGH` ne détectait pas cette régression. Je l'ai do
 ## Partie G : Workflow et quality gate
 - Run #1 : échec à l'étape Scan image (65 vulnérabilités). Le gate a bloqué une image obsolète
 - Run #2 : succès après correction du Dockerfile
-- Test de la section 9.1 : PR avec `runAsNonRoot: false`, échec attendu à l'étape Scan Kubernetes manifests <à confirmer avec ta capture>
+- Test de la section 9.1 : PR avec `runAsNonRoot: false`, échec constaté à l'étape Scan Kubernetes manifests (capture jointe)
 
 Les constructions CI et locale utilisent le même Dockerfile mais des tags différents. Cela valide la recette de construction, pas l'identité binaire de l'artefact.
 
