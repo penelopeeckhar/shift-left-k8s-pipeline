@@ -6,16 +6,7 @@ Built as a hands-on DevSecOps lab (chapter 6: secure CI/CD chain). Full write-up
 
 ## Pipeline
 
-```mermaid
-flowchart LR
-  A[Push / PR] --> B[Checkout<br/>no persisted credentials]
-  B --> C[Build image]
-  C --> D[Trivy image scan<br/>HIGH+CRITICAL block]
-  D --> E[helm lint]
-  E --> F[helm template]
-  F --> G[Trivy config scan<br/>MEDIUM+ block]
-  G --> H[Manual deploy<br/>to local k3s]
-```
+<p align="center"><img src="docs/pipeline.png" alt="Secure CI/CD pipeline" width="100%"></p>
 
 The workflow validates; the deployment is done separately from the workstation. GitHub Actions never gets access to the cluster.
 
