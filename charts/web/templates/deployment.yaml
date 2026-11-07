@@ -15,7 +15,7 @@ spec:
       serviceAccountName: web
       automountServiceAccountToken: false
       securityContext:
-        runAsNonRoot: true
+        runAsNonRoot: false
         runAsUser: 101
         seccompProfile:
           type: RuntimeDefault
