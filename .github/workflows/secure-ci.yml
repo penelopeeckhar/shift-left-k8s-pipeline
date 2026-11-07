@@ -1,0 +1,54 @@
+name: Secure CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5   # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4   # v4.3.1
+        with:
+          version: v3.16.4
+
+      - name: Build image
+        run: docker build -t tp6-web:${{ github.sha }} .
+
+      - name: Scan image
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1   # 0.35.0
+        with:
+          scan-type: image
+          image-ref: tp6-web:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          severity: "CRITICAL,HIGH"
+          ignore-unfixed: true
+
+      - name: Helm lint
+        run: helm lint ./charts/web
+
+      - name: Render Kubernetes manifests
+        run: helm template web ./charts/web > rendered.yaml
+
+      - name: Scan Kubernetes manifests
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1   # 0.35.0
+        with:
+          scan-type: config
+          scan-ref: rendered.yaml
+          format: table
+          exit-code: "1"
+          severity: "CRITICAL,HIGH,MEDIUM"
